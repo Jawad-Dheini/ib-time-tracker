@@ -45,6 +45,12 @@
         margin-bottom: 30px;
       }
 
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        font-size: 1em;
+      }
+
       label {
         font-size: 1.2em;
         display: flex;
@@ -55,6 +61,7 @@
       input,
       button {
         padding: 8px 12px;
+        font-family: inherit;
         font-size: 1.1em;
         border-radius: 5px;
         border: 1px solid #ccc;
@@ -123,6 +130,13 @@
         color: #888;
         font-style: italic;
       }
+
+      input,
+      button,
+      select,
+      textarea {
+        font-family: inherit;
+      }
     </style>
   </head>
   <body>
@@ -142,7 +156,12 @@
           <input type="number" id="duration" required min="1" />
         </div>
         <div class="form-group">
-          <button type="submit">Add Exam Row</button>
+          <button
+            type="submit"
+            style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+          >
+            Add Exam Row
+          </button>
         </div>
       </form>
 
