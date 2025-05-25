@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IB Exam Time Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background-color: #f9f9f9;
+      }
+
+      header {
+        background-color: #111;
+        color: white;
+        text-align: center;
+        padding: 40px 20px;
+        font-size: clamp(4em, 18vw, 18em);
+        line-height: 0.9;
+        letter-spacing: 0.05em;
+        flex: 0 0 auto;
+        overflow: hidden;
+        white-space: nowrap;
+        max-width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      main {
+        flex: 1 1 auto;
+        padding: 30px 50px;
+      }
+
+      form {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        margin-bottom: 30px;
+      }
+
+      label {
+        font-size: 1.2em;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      input,
+      button {
+        padding: 8px 12px;
+        font-size: 1.1em;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      button {
+        cursor: pointer;
+        background-color: #222;
+        color: white;
+        transition: background 0.3s;
+      }
+
+      button:hover {
+        background-color: #444;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 1.1em;
+        background-color: white;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+      }
+
+      th,
+      td {
+        padding: 16px;
+        border: 1px solid #ddd;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f0f0f0;
+        font-weight: bold;
+      }
+
+      tbody tr:nth-child(even) {
+        background-color: #fafafa;
+      }
+
+      tbody tr:hover {
+        background-color: #f1f7ff;
+      }
+
+      th:nth-child(1),
+      td:nth-child(1) {
+        width: 35%;
+      }
+
+      input[type=\"time\"] {
+        width: 100px;
+      }
+
+      .highlight-red {
+        background-color: #ffdddd !important;
+        font-weight: bold;
+        color: #a10000;
+      }
+
+      .active-exam {
+        background-color: #e6f4ff !important;
+      }
+
+      .finished-exam {
+        background-color: #f4f4f4 !important;
+        color: #888;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <header id="clock">--:--:--</header>
+    <main>
+      <form id="examForm">
+        <div class="form-group">
+          <label for="examName">Exam Name</label>
+          <input type="text" id="examName" required />
+        </div>
+        <div class="form-group">
+          <label for="startTime">Start Time</label>
+          <input type="time" id="startTime" required />
+        </div>
+        <div class="form-group">
+          <label for="duration">Duration (minutes)</label>
+          <input type="number" id="duration" required min="1" />
+        </div>
+        <div class="form-group">
+          <button type="submit">Add Exam Row</button>
+        </div>
+      </form>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Exam</th>
+            <th>Start Time</th>
+            <th>30 min Left</th>
+            <th>5 min Left</th>
+            <th>End Time</th>
+          </tr>
+        </thead>
+        <tbody id="examTableBody"></tbody>
+      </table>
+    </main>
+
+    <script>
+      const clock = document.getElementById("clock");
+      const form = document.getElementById("examForm");
+      const examTable = document.getElementById("examTableBody");
+      let examCount = 0;
+
+      function updateClock() {
+        clock.textContent = dayjs().format("HH:mm:ss");
+      }
+
+      function checkHighlighting() {
+        const currentTime = dayjs().format("HH:mm");
+        const rows = document.querySelectorAll("#examTableBody tr");
+
+        rows.forEach((row) => {
+          row.classList.remove("active-exam", "finished-exam");
+          row.children[0].innerHTML = row.children[0].innerHTML.replace(
+            " - Finished",
+            ""
+          );
+
+          const start = row.children[1].textContent;
+          const end = row.children[4].textContent;
+
+          const now = dayjs();
+          const today = dayjs().format("YYYY-MM-DD");
+          const startTime = dayjs(`${today}T${start}`);
+          const endTime = dayjs(`${today}T${end}`);
+
+          if (
+            now.isAfter(startTime) &&
+            now.isBefore(endTime.add(1, "second"))
+          ) {
+            row.classList.add("active-exam");
+          }
+
+          [2, 3, 4].forEach((index) => {
+            const cell = row.children[index];
+            const cellTime = dayjs(`${today}T${cell.textContent}`);
+            if (now.isSame(cellTime) || now.isAfter(cellTime)) {
+              cell.classList.add("highlight-red");
+            }
+          });
+
+          if (now.isAfter(endTime)) {
+            row.classList.add("finished-exam");
+
+            if (!row.children[0].innerHTML.includes("Finished")) {
+              row.children[0].innerHTML += " - Finished";
+            }
+
+            [1, 2, 3, 4].forEach((index) => {
+              row.children[index].classList.remove("highlight-red");
+            });
+          }
+        });
+      }
+
+      setInterval(() => {
+        updateClock(); // still updates the clock
+        checkHighlighting(); // also checks if any cell needs to turn red
+      }, 1000);
+
+      updateClock();
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const examName = document.getElementById("examName").value.trim();
+        const startTimeInput = document.getElementById("startTime").value;
+        const duration = parseInt(document.getElementById("duration").value);
+
+        const today = dayjs().format("YYYY-MM-DD");
+        const start = dayjs(`${today}T${startTimeInput}`);
+        const end = start.add(duration, "minute");
+        const minus30 = end.subtract(30, "minute");
+        const minus5 = end.subtract(5, "minute");
+
+        examCount++;
+        const row = document.createElement("tr");
+        row.setAttribute("data-duration", duration);
+
+        row.innerHTML = `
+          <td>${examName}</td>
+          <td ondblclick="editStartTime(this)">${start.format("HH:mm")}</td>
+          <td>${minus30.format("HH:mm")}</td>
+          <td>${minus5.format("HH:mm")}</td>
+          <td>${end.format("HH:mm")}</td>
+        `;
+
+        examTable.appendChild(row);
+        form.reset();
+      });
+
+      function editStartTime(cell) {
+        const oldTime = cell.textContent;
+        const input = document.createElement("input");
+        input.type = "time";
+        input.value = oldTime;
+        input.style.fontSize = "1em";
+        input.style.width = "80px";
+
+        cell.innerHTML = "";
+        cell.appendChild(input);
+        input.focus();
+
+        input.addEventListener("blur", () => applyNewTime(cell, input.value));
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            input.blur();
+          } else if (e.key === "Escape") {
+            cell.textContent = oldTime;
+          }
+        });
+      }
+
+      function applyNewTime(cell, newTime) {
+        const row = cell.closest("tr");
+        const duration = parseInt(row.getAttribute("data-duration"), 10);
+        const today = dayjs().format("YYYY-MM-DD");
+
+        const newStart = dayjs(`${today}T${newTime}`);
+        const newEnd = newStart.add(duration, "minute");
+        const newMinus30 = newEnd.subtract(30, "minute");
+        const newMinus5 = newEnd.subtract(5, "minute");
+
+        cell.textContent = newStart.format("HH:mm");
+        row.children[2].textContent = newMinus30.format("HH:mm");
+        row.children[3].textContent = newMinus5.format("HH:mm");
+        row.children[4].textContent = newEnd.format("HH:mm");
+      }
+    </script>
+  </body>
+</html>
