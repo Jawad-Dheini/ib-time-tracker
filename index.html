@@ -81,7 +81,7 @@
       table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 1.5em;
+        font-size: 1.8em;
         background-color: white;
         box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
       }
@@ -130,6 +130,7 @@
 
       .active-exam {
         background-color: #e6f4ff !important;
+        font-weight: bold;
       }
 
       .finished-exam {
@@ -174,6 +175,20 @@
         background: none;
         outline: none;
       }
+      /* 
+      th {
+        position: relative;
+      }
+
+      .resizer {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 5px;
+        height: 100%;
+        cursor: col-resize;
+        user-select: none;
+      } */
     </style>
   </head>
   <body>
@@ -409,6 +424,32 @@
         row.children[3].textContent = newMinus5.format("HH:mm");
         row.children[4].textContent = newEnd.format("HH:mm");
       }
+      /*
+document.querySelectorAll("th").forEach((th) => {
+  const resizer = document.createElement("div");
+  resizer.classList.add("resizer");
+  th.appendChild(resizer);
+
+  let startX, startWidth;
+
+  resizer.addEventListener("mousedown", (e) => {
+    startX = e.pageX;
+    startWidth = th.offsetWidth;
+
+    const onMouseMove = (e) => {
+      const newWidth = startWidth + (e.pageX - startX);
+      th.style.width = `${newWidth}px`;
+    };
+
+    const onMouseUp = () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+    };
+
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+  });
+}); */
     </script>
   </body>
 </html>
