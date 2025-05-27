@@ -268,7 +268,7 @@
       style="
         text-align: center;
         padding: 15px;
-        font-size: 0.95em;
+        font-size: 1.4em;
         color: #777;
         background: #f1f1f1;
         border-top: 1px solid #ddd;
@@ -293,7 +293,7 @@
         const rows = document.querySelectorAll("#examTableBody tr");
 
         rows.forEach((row) => {
-          row.classList.remove("active-exam", "finished-exam");
+          row.classList.remove("active-exam", "highlight-red", "finished-exam");
           row.children[0].innerHTML = row.children[0].innerHTML.replace(
             " - Finished",
             ""
@@ -307,20 +307,26 @@
           const startTime = dayjs(`${today}T${start}`);
           const endTime = dayjs(`${today}T${end}`);
 
+          [2, 3, 4].forEach((index) => {
+            const cell = row.children[index];
+            const cellTime = dayjs(`${today}T${cell.textContent}`);
+            if (
+              (now.isSame(cellTime) || now.isAfter(cellTime)) &&
+              now.isAfter(startTime) &&
+              now.isBefore(endTime.add(1, "second"))
+            ) {
+              cell.classList.add("highlight-red");
+            } else {
+              cell.classList.remove("highlight-red");
+            }
+          });
+
           if (
             now.isAfter(startTime) &&
             now.isBefore(endTime.add(1, "second"))
           ) {
             row.classList.add("active-exam");
           }
-
-          [2, 3, 4].forEach((index) => {
-            const cell = row.children[index];
-            const cellTime = dayjs(`${today}T${cell.textContent}`);
-            if (now.isSame(cellTime) || now.isAfter(cellTime)) {
-              cell.classList.add("highlight-red");
-            }
-          });
 
           if (now.isAfter(endTime)) {
             row.classList.add("finished-exam");
@@ -393,7 +399,7 @@
         input.type = "time";
         input.value = oldTime;
         input.style.fontSize = "1em";
-        input.style.width = "80px";
+        input.style.width = "125px";
 
         cell.innerHTML = "";
         cell.appendChild(input);
