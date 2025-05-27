@@ -151,8 +151,8 @@
         padding: 0;
         margin: 0;
         cursor: pointer;
-        width: 24px;
-        height: 24px;
+        width: 30px;
+        height: 30px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -160,8 +160,8 @@
 
       .delete-btn svg {
         fill: #cc0000;
-        width: 18px;
-        height: 18px;
+        width: 24px;
+        height: 24px;
         transition: fill 0.2s ease;
       }
 
@@ -185,17 +185,19 @@
         position: fixed;
         top: 20px;
         right: 20px;
+        width: 40px;
+        height: 40px;
         z-index: 999;
         background: none;
         border: none;
+        border-width: 0;
+        padding: 0;
         cursor: pointer;
         color: #444;
         background-color: #f1f1f1;
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 40px;
-        height: 40px;
         transition: background-color 0.2s ease, box-shadow 0.2s ease;
       "
       onmouseover="this.style.backgroundColor='#e0e0e0'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.2)'"
@@ -204,7 +206,7 @@
       <img
         src="./src/maximize.png"
         alt="Fullscreen"
-        style="width: 28px; height: 28px"
+        style="width: 28px; height: 28px; display: block"
       />
     </button>
 
