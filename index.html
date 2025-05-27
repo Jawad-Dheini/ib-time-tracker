@@ -52,7 +52,7 @@
       }
 
       label {
-        font-size: 1.2em;
+        font-size: 1.1em;
         display: flex;
         flex-direction: column;
         gap: 5px;
@@ -141,6 +141,36 @@
   </head>
   <body>
     <header id="clock">--:--:--</header>
+
+    <button
+      id="fullscreenBtn"
+      style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 999;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #444;
+        background-color: #f1f1f1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        transition: background-color 0.2s ease, box-shadow 0.2s ease;
+      "
+      onmouseover="this.style.backgroundColor='#e0e0e0'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.2)'"
+      onmouseout="this.style.backgroundColor='#f1f1f1'; this.style.boxShadow='none'"
+    >
+      <img
+        src="./src/maximize.png"
+        alt="Fullscreen"
+        style="width: 28px; height: 28px"
+      />
+    </button>
+
     <main>
       <form id="examForm">
         <div class="form-group">
@@ -285,6 +315,18 @@
 
         examTable.appendChild(row);
         form.reset();
+      });
+
+      document.getElementById("fullscreenBtn").addEventListener("click", () => {
+        const docEl = document.documentElement;
+
+        if (!document.fullscreenElement) {
+          docEl.requestFullscreen().catch((err) => {
+            alert(`Error attempting to enable fullscreen: ${err.message}`);
+          });
+        } else {
+          document.exitFullscreen();
+        }
       });
 
       function editStartTime(cell) {
